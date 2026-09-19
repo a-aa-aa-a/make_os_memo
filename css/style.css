@@ -290,8 +290,10 @@ pre{
     .content{
         margin-left:0;
         padding:25px;
+        width:calc(100%);
+        padding:50px;
     }
-
+ 
     .content h1{
         font-size:32px;
     }

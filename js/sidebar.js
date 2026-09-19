@@ -21,7 +21,7 @@ function initializeSidebar()
 function createSidebar()
 {
     const list =
-        document.getElementById("chapter-list");
+        document.getElementById("abc");
 
     const currentPage =
         location.pathname.split("/").pop();
@@ -34,7 +34,7 @@ function createSidebar()
         const a =
             document.createElement("a");
 
-        a.href = chapter.path;
+        a.href =  chapter.path;
         a.textContent = chapter.title;
 
         if(chapter.path === currentPage)

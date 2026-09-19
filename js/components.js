@@ -15,11 +15,13 @@ async function loadComponent(id, path)
 async function initializeLayout()
 {
     await Promise.all([
-        loadComponent("header-container", "./components/header.html"),
-        loadComponent("sidebar-container", "./components/sidebar.html")
+        loadComponent("header-container", "/components/header.html"),
+        loadComponent("sidebar-container","/components/sidebar.html")
     ]);
 
     initializeSidebar();
+    createSidebar();
+
 }
 
 initializeLayout();

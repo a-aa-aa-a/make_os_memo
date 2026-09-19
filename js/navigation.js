@@ -30,7 +30,7 @@ function initializeNavigation()
 
         prevBtn.onclick = () =>
         {
-            location.href = prevChapter.path;
+            location.href =  prevChapter.path;
         };
     }
     else
@@ -49,7 +49,7 @@ function initializeNavigation()
 
         nextBtn.onclick = () =>
         {
-            location.href = nextChapter.path;
+            location.href =  nextChapter.path;
         };
     }
     else
@@ -57,4 +57,3 @@ function initializeNavigation()
         nextBtn.style.display = "none";
     }
 }
-``

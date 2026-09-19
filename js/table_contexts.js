@@ -19,7 +19,7 @@ function generateTableOfContents()
         const a =
             document.createElement("a");
 
-        a.href = `#${heading.id}`;
+        a.href = "." + `#${heading.id}`;
         a.textContent = heading.textContent;
 
         li.appendChild(a);

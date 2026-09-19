@@ -6,7 +6,7 @@
 
     <title>title</title>
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -38,16 +38,21 @@
         </div>
     </main>
 
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/components.js"></script>
-    <script src="../js/chapters.js"></script>
-    <script src="../js/navigation.js"></script>
-    <script src="../js/table_contexts.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/chapters.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/table_contexts.js"></script>
     <script>
         initializeNavigation();
         window.addEventListener("DOMContentLoaded", () =>{
             generateTableOfContents();
         });
+            const base = document.createElement("base");
+       base.href = location.pathname.includes("/make_os_memo/")
+           ? "/make_os_memo/"
+          : "/";
+        document.head.appendChild(base);
     </script>
 </body>
 </html>
