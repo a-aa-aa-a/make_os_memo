@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>title</title>
+    <title>-----</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/make_os_memo/css/style.css">
 </head>
 <body>
 
@@ -16,43 +16,35 @@
 
     <main class="content">
         <div class="chapter-info">
-            ------
+            第1章
         </div>
 
-        <h1>----</h1>
+        <h1>環境構築</h1>
 
-        <p>---</p>
+        <p>この章では開発環境を構築する方法を説明します。</p>
         <nav class="chapter-toc">
             <h3>目次</h3>    
             <ul id="toc-list"></ul>
         </nav>
-        <h2>1. </h2>
-        <p>---</p>
+        <h2>1. vscodeの導入</h2>
 
-        <h2>2. </h2>
-        <h2>3. </h2>
-        
         <div class="chapter-nav">
             <button id="prev-btn">← 前の章</button>
             <button id="next-btn">次の章 →</button>
         </div>
     </main>
-
-    <script src="/js/sidebar.js"></script>
-    <script src="/js/components.js"></script>
-    <script src="/js/chapters.js"></script>
-    <script src="/js/navigation.js"></script>
-    <script src="/js/table_contexts.js"></script>
+    <script src="/make_os_memo/js/chapters.js"></script>
+    <script src="/make_os_memo/js/sidebar.js"></script>
+    <script src="/make_os_memo/js/components.js"></script>
+    <script src="/make_os_memo/js/navigation.js"></script>
+    <script src="/make_os_memo/js/table_contexts.js"></script>
     <script>
         initializeNavigation();
         window.addEventListener("DOMContentLoaded", () =>{
             generateTableOfContents();
+            initializeSidebar();
         });
-            const base = document.createElement("base");
-       base.href = location.pathname.includes("/make_os_memo/")
-           ? "/make_os_memo/"
-          : "/";
-        document.head.appendChild(base);
     </script>
+
 </body>
 </html>

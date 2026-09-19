@@ -15,8 +15,8 @@ async function loadComponent(id, path)
 async function initializeLayout()
 {
     await Promise.all([
-        loadComponent("header-container", "/components/header.html"),
-        loadComponent("sidebar-container","/components/sidebar.html")
+        loadComponent("header-container", "/make_os_memo/components/header.html"),
+        loadComponent("sidebar-container","/make_os_memo/components/sidebar.html")
     ]);
 
     initializeSidebar();

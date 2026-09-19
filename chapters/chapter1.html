@@ -6,7 +6,7 @@
 
     <title>第1章 環境構築</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/make_os_memo/css/style.css">
 </head>
 <body>
 
@@ -40,33 +40,17 @@
             <button id="next-btn">次の章 →</button>
         </div>
     </main>
-    <script src="/js/chapters.js"></script>
-    <script>
-        const base = document.createElement("base");
-        base.href = location.pathname.includes("/make_os_memo/")
-            ? "/make_os_memo/"
-            : "/";
-        document.head.appendChild(base);
-        
-    </script>
-    <script src="/js/components.js"></script>
-    <script src="/js/sidebar.js"></script>
-    
-    <script src="/js/navigation.js"></script>
-    <script src="/js/table_contexts.js"></script>
+    <script src="/make_os_memo/js/chapters.js"></script>
+    <script src="/make_os_memo/js/sidebar.js"></script>
+    <script src="/make_os_memo/js/components.js"></script>
+    <script src="/make_os_memo/js/navigation.js"></script>
+    <script src="/make_os_memo/js/table_contexts.js"></script>
     <script>
         initializeNavigation();
         window.addEventListener("DOMContentLoaded", () =>{
             generateTableOfContents();
             initializeSidebar();
-            async function main() {
-               await loadComponent();
-            createSidebar();
-            main();
-}
         });
-      
-        
     </script>
 
 </body>

@@ -14,13 +14,5 @@ const chapters = [
     {
         title: "第4章 Protected Mode",
         path: "chapter4.html"
-    },
-    {
-        title: "第5章 GDT",
-        path: "chapter5.html"
-    },
-    {
-        title: "第6章 IDT",
-        path: "chapter6.html"
     }
 ];

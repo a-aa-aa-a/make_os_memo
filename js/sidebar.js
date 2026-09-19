@@ -33,8 +33,12 @@ function createSidebar()
 
         const a =
             document.createElement("a");
-
-        a.href =  chapter.path;
+        if(location.pathname.includes("chapters")){
+            a.href =  chapter.path;
+        }else{
+            a.href =  "chapters/"+ chapter.path;
+        }
+        
         a.textContent = chapter.title;
 
         if(chapter.path === currentPage)
