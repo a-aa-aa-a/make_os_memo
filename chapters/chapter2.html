@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>title</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div id="header-container"></div>
+    <div class="overlay" id="overlay"></div>
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+        <div class="chapter-info">
+            ------
+        </div>
+
+        <h1>----</h1>
+
+        <p>---</p>
+        <nav class="chapter-toc">
+            <h3>目次</h3>    
+            <ul id="toc-list"></ul>
+        </nav>
+        <h2>1. </h2>
+        <p>---</p>
+
+        <h2>2. </h2>
+        <h2>3. </h2>
+        
+        <div class="chapter-nav">
+            <button id="prev-btn">← 前の章</button>
+            <button id="next-btn">次の章 →</button>
+        </div>
+    </main>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/chapters.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/table_contexts.js"></script>
+    <script>
+        initializeNavigation();
+        window.addEventListener("DOMContentLoaded", () =>{
+            generateTableOfContents();
+        });
+    </script>
+</body>
+</html>
