@@ -4,30 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>-----</title>
-
+    <title>第2章 BIOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai-sublime.min.css">
     <link rel="stylesheet" href="/make_os_memo/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.css">
+    <script src="/make_os_memo/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          // コードハイライト
+          hljs.highlightAll();
+          // 行番号追加
+          hljs.initLineNumbersOnLoad();
+        
+          // 各コードブロックにコピーボタンを追加
+          document.querySelectorAll("pre code").forEach((block) => {
+            const pre = block.parentElement;
+            const container = document.createElement("div");
+            container.classList.add("code-container");
+        
+            // preをcode-containerの中へ移動
+            pre.parentNode.insertBefore(container, pre);
+            container.appendChild(pre);
+        
+            // コピーボタン作成
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = "Copy";
+            btn.className = "copy-btn";
+            btn.addEventListener("click", () => {
+              navigator.clipboard.writeText(block.innerText).then(() => {
+                btn.textContent = "Copied!";
+                setTimeout(() => btn.textContent = "Copy", 1500);
+              });
+            });
+        
+            container.appendChild(btn);
+          });
+        });
+    </script>
+
 </head>
-<body>
 
     <div id="header-container"></div>
     <div class="overlay" id="overlay"></div>
     <div id="sidebar-container"></div>
 
     <main class="content">
-        <div class="chapter-info">
-            第1章
-        </div>
-
-        <h1>環境構築</h1>
-
-        <p>この章では開発環境を構築する方法を説明します。</p>
+        <div class="chapter-info">第2章</div>
+        <h1>BIOS</h1>
+        <p>実際に使っているosはどのように起動しているのか</p>
+        <p>この章では電源を入れてからosが読み込まれるまでの流れをまとめます</p>
+        <p></p>
         <nav class="chapter-toc">
             <h3>目次</h3>    
             <ul id="toc-list"></ul>
         </nav>
-        <h2>1. vscodeの導入</h2>
-
+        <h2>1. osの起動の流れ</h2>
+        <p>
+            大まかな流れは以下の通りです。
+        </p>
+        <ol>
+            <li>cpuがリセットされる</li>
+            <li>bios(firmware)が読み込まれる</li>
+            <li>ram/デバイスを初期化</li>
+            <li>短いプログラムをramに書き込む</li>
+            <li>ramの特定の番地(0x7c00)までjmp</li>
+            <li>osに必要なプログラムを最初に読み込んだプログラムが読み込む</li>
+        </ol>
+        
+        <h2>2. アセンブリを書いてみよう</h2>
+        <h2>3. 仮想環境で実行してみよう</h2>
+        <h2>ex. 実機で実行してみよう</h2>
+        
+        <pre>
+            <code class="hljs language-cmd">wsl --version</code>
+        </pre>
         <div class="chapter-nav">
             <button id="prev-btn">← 前の章</button>
             <button id="next-btn">次の章 →</button>
@@ -45,6 +97,6 @@
             initializeSidebar();
         });
     </script>
-
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
