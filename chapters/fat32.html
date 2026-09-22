@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FAT32</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai-sublime.min.css">
+    <link rel="stylesheet" href="/make_os_memo/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.css">
+    <script src="/make_os_memo/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          hljs.highlightAll();
+          hljs.initLineNumbersOnLoad();
+
+          document.querySelectorAll("pre code").forEach((block) => {
+            const pre = block.parentElement;
+            const container = document.createElement("div");
+            container.classList.add("code-container");
+
+            pre.parentNode.insertBefore(container, pre);
+            container.appendChild(pre);
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = "Copy";
+            btn.className = "copy-btn";
+            btn.addEventListener("click", () => {
+              navigator.clipboard.writeText(block.innerText).then(() => {
+                btn.textContent = "Copied!";
+                setTimeout(() => btn.textContent = "Copy", 1500);
+              });
+            });
+
+            container.appendChild(btn);
+          });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="header-container"></div>
+    <div class="overlay" id="overlay"></div>
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+        <div class="chapter-info">ファイルシステム</div>
+        <h1>FAT32</h1>
+
+        <p>
+            FAT32は、USBメモリやSDカードなどで広く使われてきたファイルシステムです。
+            自作OSでは、FAT32を実装すると、ストレージ上のファイルを読み込んだり、
+            カーネルや設定ファイルなどをファイルとして扱ったりできるようになります。
+        </p>
+
+        <nav class="chapter-toc">
+            <h3>目次</h3>
+            <ul id="toc-list"></ul>
+        </nav>
+
+        <h2>1. FAT32とは</h2>
+        <p>
+            FAT32は、ディスクを「ファイル」と「ディレクトリ」として管理するための
+            ファイルシステムです。ディスク上にファイルを置くとき、ファイルのデータが
+            どの位置に存在するのか、どのクラスタが次に続くのかなどの情報を管理します。
+        </p>
+
+        <p>
+            FAT32では、ディスクを固定長の「クラスタ」という単位に分割して管理します。
+            ファイルは1個以上のクラスタを使用し、複数のクラスタにまたがる場合はFAT
+            （File Allocation Table）によってクラスタのつながりを追跡します。
+        </p>
+
+        <h2>2. FAT32のディスク構造</h2>
+        <p>
+            FAT32のボリュームは、大まかに次のような領域に分かれています。
+        </p>
+
+        <pre><code class="language-text">+-------------------------+
+| Reserved Region         |
+|  - Boot Sector          |
+|  - FSInfo               |
++-------------------------+
+| FAT #1                  |
++-------------------------+
+| FAT #2                  |
++-------------------------+
+| Data Region             |
+|  - Root Directory       |
+|  - Files / Directories  |
++-------------------------+</code></pre>
+
+        <p>
+            重要なのは、FAT32ではファイルの実データがFATそのものに保存されている
+            わけではないという点です。FATは、データ領域にあるクラスタ同士のつながりを
+            管理するための表です。
+        </p>
+
+        <h2>3. ブートセクタとBPB</h2>
+        <p>
+            ボリュームの先頭には、FAT32の構造を知るための情報が入っています。
+            その中心となるのがBPB（BIOS Parameter Block）です。
+        </p>
+
+        <p>
+            BPBには、1セクタの大きさ、1クラスタあたりのセクタ数、予約領域のセクタ数、
+            FATの数、FATのサイズ、ルートディレクトリの開始クラスタなど、
+            ボリュームを解析するために必要な情報が格納されています。
+        </p>
+
+        <pre><code class="language-c">struct fat32_bpb {
+    uint16_t bytes_per_sector;
+    uint8_t  sectors_per_cluster;
+    uint16_t reserved_sectors;
+    uint8_t  fat_count;
+    uint32_t sectors_per_fat;
+    uint32_t root_cluster;
+};</code></pre>
+
+        <p>
+            実際のFAT32 BPBには、この例より多くのフィールドがあります。
+            自作OSでは、まず必要なフィールドを正しく読み取り、ボリュームの各領域を
+            計算できるようにすることが重要です。
+        </p>
+
+        <h2>4. セクタとクラスタ</h2>
+        <p>
+            FAT32を理解するときは、「セクタ」と「クラスタ」を区別する必要があります。
+            セクタはストレージ装置から読み書きする基本単位で、クラスタはFAT32が
+            ファイルの領域を管理する単位です。
+        </p>
+
+        <p>
+            例えば、1セクタが512バイトで、1クラスタが8セクタなら、1クラスタは
+            4096バイトになります。
+        </p>
+
+        <pre><code class="language-text">1 sector    = 512 bytes
+8 sectors   = 1 cluster
+1 cluster   = 4096 bytes</code></pre>
+
+        <h2>5. FATの役割</h2>
+        <p>
+            FAT（File Allocation Table）は、クラスタの次にどのクラスタが続くかを
+            記録します。つまり、大きなファイルが複数のクラスタに分割されていても、
+            FATをたどることでファイルの全データを読み出せます。
+        </p>
+
+        <p>
+            例えば、あるファイルがクラスタ10、25、26、40を使用している場合、
+            FATには概念的に次のような情報が入ります。
+        </p>
+
+        <pre><code class="language-text">FAT[10] = 25
+FAT[25] = 26
+FAT[26] = 40
+FAT[40] = END</code></pre>
+
+        <p>
+            そのため、ファイルの最初のクラスタが分かれば、FATを順番に参照して
+            ファイル全体のクラスタ列を取得できます。
+        </p>
+
+        <h2>6. クラスタ番号からセクタを求める</h2>
+        <p>
+            FAT32では、データ領域のクラスタ番号から実際のセクタ位置を計算します。
+            データ領域の先頭セクタを <code>first_data_sector</code> とすると、
+            基本的には次のように考えられます。
+        </p>
+
+        <pre><code class="language-c">first_sector_of_cluster =
+    first_data_sector +
+    (cluster - 2) * sectors_per_cluster;</code></pre>
+
+        <p>
+            クラスタ番号2がデータ領域の先頭クラスタとして扱われるため、
+            <code>cluster - 2</code> となります。
+        </p>
+
+        <h2>7. ルートディレクトリ</h2>
+        <p>
+            FAT32では、ルートディレクトリも通常のディレクトリと同じように
+            データ領域のクラスタを使用します。BPBからルートディレクトリの開始
+            クラスタを取得し、そのクラスタからディレクトリエントリを読み取ります。
+        </p>
+
+        <p>
+            ディレクトリエントリには、ファイル名、属性、サイズ、最初のクラスタなどの
+            情報が記録されています。
+        </p>
+
+        <pre><code class="language-text">Directory Entry
++----------------------+
+| File name             |
+| Attribute             |
+| Time / Date           |
+| First cluster         |
+| File size             |
++----------------------+</code></pre>
+
+        <h2>8. ファイルを読み込む流れ</h2>
+        <p>
+            自作OSでFAT32上のファイルを読む場合、概ね次の順番で処理します。
+        </p>
+
+        <ol>
+            <li>ストレージデバイスからFAT32の先頭セクタを読む</li>
+            <li>BPBを解析する</li>
+            <li>予約領域、FAT領域、データ領域の位置を計算する</li>
+            <li>ルートディレクトリを読み込む</li>
+            <li>目的のファイルのディレクトリエントリを探す</li>
+            <li>ファイルの開始クラスタを取得する</li>
+            <li>FATをたどってクラスタ列を取得する</li>
+            <li>各クラスタのデータを読み込む</li>
+            <li>ファイルサイズまでを有効なデータとして扱う</li>
+        </ol>
+
+        <h2>9. 自作OSでの実装イメージ</h2>
+        <p>
+            FAT32ドライバを作るときは、最初から書き込みまで実装する必要はありません。
+            まずは「FAT32を認識してファイルを読む」ことを目標にすると、
+            ストレージドライバとファイルシステムの役割を分離して考えやすくなります。
+        </p>
+
+        <pre><code class="language-c">void fat32_init(block_device_t *device)
+{
+    // 1. Boot Sector / BPBを読む
+    // 2. FAT32であることを確認する
+    // 3. 各領域の開始位置を計算する
+    // 4. root clusterを取得する
+}
+
+int fat32_open(const char *path)
+{
+    // ディレクトリをたどってファイルを探す
+    return 0;
+}
+
+size_t fat32_read(int fd, void *buffer, size_t size)
+{
+    // FATをたどりながらファイルデータを読む
+    return 0;
+}</code></pre>
+
+        <h2>10. ストレージドライバとの関係</h2>
+        <p>
+            FAT32そのものは、SSDやHDD、USBメモリなどの物理デバイスを直接操作する
+            仕組みではありません。自作OSでは、下位層のストレージドライバが
+            「指定したLBAのセクタを読む」という機能を提供し、その上でFAT32ドライバが
+            ファイルシステムを解釈する構成にできます。
+        </p>
+
+        <pre><code class="language-text">アプリケーション
+       ↓
+ファイルAPI
+       ↓
+FAT32ドライバ
+       ↓
+ブロックデバイスAPI
+       ↓
+SATA / NVMe / USB Mass Storage
+       ↓
+ストレージデバイス</code></pre>
+
+        <p>
+            このように層を分けると、FAT32側は「セクタを読める」というインターフェース
+            だけを利用でき、下位のデバイスが変わってもファイルシステムのコードを
+            大きく変更せずに済みます。
+        </p>
+
+        <h2>11. 実装するときのロードマップ</h2>
+        <ol>
+            <li>ブロックデバイスからセクタを読む</li>
+            <li>FAT32のBPBを解析する</li>
+            <li>FATの位置とデータ領域を計算する</li>
+            <li>ルートディレクトリを読む</li>
+            <li>短いファイル名のディレクトリエントリを解析する</li>
+            <li>FATチェーンをたどってファイルを読む</li>
+            <li>サブディレクトリに対応する</li>
+            <li>ロングファイルネームに対応する</li>
+            <li>必要になったらファイル作成・書き込みに対応する</li>
+        </ol>
+
+        <h2>12. まとめ</h2>
+        <p>
+            FAT32を実装するうえで重要なのは、「BPBからボリューム構造を知る」、
+            「ディレクトリエントリからファイルを見つける」、「FATからクラスタの
+            つながりをたどる」という3つの処理です。
+        </p>
+
+        <p>
+            自作OSでは、まず読み込み専用のFAT32ドライバを完成させ、
+            <code>kernel.bin</code> などのファイルをストレージから読み込めるようにすると、
+            ファイルシステムの基本的な仕組みを確認しやすくなります。
+        </p>
+
+        <div class="chapter-nav">
+            <button id="prev-btn">← 前の章</button>
+            <button id="next-btn">次の章 →</button>
+        </div>
+    </main>
+
+    <script src="/make_os_memo/js/chapters.js"></script>
+    <script src="/make_os_memo/js/sidebar.js"></script>
+    <script src="/make_os_memo/js/components.js"></script>
+    <script src="/make_os_memo/js/navigation.js"></script>
+    <script src="/make_os_memo/js/table_contexts.js"></script>
+    <script>
+        initializeNavigation();
+        window.addEventListener("DOMContentLoaded", () => {
+            generateTableOfContents();
+            initializeSidebar();
+        });
+    </script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

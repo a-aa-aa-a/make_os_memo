@@ -4,7 +4,7 @@ const chapters = [
         path: "chapter1.html"
     },
     {
-        title: "第2章 BIOS",
+        title: "第2章 OSとは",
         path: "chapter2.html"
     },
     {

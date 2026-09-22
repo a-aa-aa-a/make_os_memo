@@ -71,17 +71,39 @@ document.addEventListener("DOMContentLoaded", () => {
         <h2>2. wslの導入</h2>
         <p>VSCode上でCtrl + Shift + @ を押してターミナルを開きます</p>
         <pre>
-            <code class="hljs language-cmd">wsl --version</code>
+            <code class="language-cmd">wsl --version</code>
         </pre>
-        <p>インストール出来たら起動します</p>
+        <p>インストール出来たら起動します（勝手に起動することもある）</p>
         <pre>
-            <code>wsl </code>
+            <code class="language-cmd">wsl </code>
         </pre>
+        <p>開いたらユーザー名などを入力します</p>
+        
+        <pre>
+            <code class="language-cmd">Create a default Unix user account:</code>
+        </pre>
+        <p>ユーザー名</p>
+        <pre>
+            <code class="language-cmd">New password:</code>
+        </pre>
+        <p>パスワード</p>
+        <pre>
+            <code class="language-cmd">Retype new password: </code>
+        </pre>
+        <p>もう一度パスワードを入力</p>
+
         <h2>3. アセンブラ、コンパイラなどの導入</h2>
         <p>これからはwsl上でコマンドを実行します</p>
         <pre>
-            <code>sudo apt install nasm gcc g++ make</code>
+            <code>sudo apt install nasm gcc g++ make gdb qemu-system-x86_64</code>
         </pre>
+
+        <p>
+            nasm x86cpuのアセンブラ<br>
+            gcc g++ c言語のコンパイラ<br>
+            qemu-system-x86_64 仮想環境<br>
+            gdb デバッグ用<br>
+        </p>
         <div class="chapter-nav">
             <button id="prev-btn">← 前の章</button>
             <button id="next-btn">次の章 →</button>
